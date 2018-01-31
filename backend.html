@@ -62,7 +62,7 @@
     </div>
     <div id="bord">
         Name:</br>
-        <input type="text" onkeydown="if(event.keyCode === 13) add(this);" />
+        <input  id="navn" type="text"/>
         <div id="info"></div>
         <div class="lamp first" onclick="turnOff(this)"></div>
         <div class="lamp" onclick="turnOff(this)"></div>
@@ -86,6 +86,7 @@
 
         var startTime = new Date().getTime();
         turnOnRandom();
+        var spentSeconds;
         function turnOnRandom() {
             var elementsList = document.getElementsByClassName("lamp");
             var randomIndex = Math.floor(Math.random() * elementsList.length);
@@ -98,8 +99,9 @@
             if (selectedElementClassList.contains("lightOn")) {
                 var finishTime = new Date().getTime();
                 var spentMilliseconds = Math.floor(finishTime - startTime);
-                var spentSeconds = spentMilliseconds / 1000;
-                document.getElementById('info').innerHTML = 'Du brukte ' + spentSeconds + ' sekunder.'
+                 spentSeconds = spentMilliseconds / 1000;
+                 document.getElementById('info').innerHTML = 'Du brukte ' + spentSeconds + ' sekunder.'
+                 add(); 
                 startTime = new Date().getTime();
                 selectedElementClassList.remove("lightOn");
                 turnOnRandom();
@@ -124,7 +126,7 @@
         firebase.initializeApp(config);
         var db = firebase.firestore();
 
-        var todoCollection = db.collection('todoItems');
+        var todoCollection = db.collection('score');
         //  db.collection('todoItems').get().then(
         todoCollection.onSnapshot(
             function (collectionSnapshot) {
@@ -134,20 +136,17 @@
                 collectionSnapshot.forEach(
                     function (todoItemsSnapshot) {
                         let todoItem = todoItemsSnapshot.data();
-                        html += '<p>' + todoItem.todoText + ' (' + todoItem.todoDate + ')  </p>';
+                        html += '<p>' + todoItem.Navn + ' (' + todoItem.Tid + ')  </p>';
                     });
                 html += '</ul>';
                 document.getElementById('todo').innerHTML = html;
 
             });
-        function add(inputTag) {
-            var d = new Date(); 
-          
-
-
+        function add() {
+            var navn = document.getElementById("navn").value;
             let todoItem = {
-                todoText: inputTag.value,
-                todoDate: d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() 
+                Navn: navn,
+                Tid: spentSeconds
                 
             };
             todoCollection.add(todoItem);
